@@ -17,18 +17,18 @@ const MENU_CATEGORIES = [
 
 const CATALOG = [
   { id: 'latte-raposa', cat: 'hot', price: 1690, img: IMG + 'menu-specialty-latte.png', emoji: '🦊', tags: ['signature'] },
-  { id: 'cappuccino-gato', cat: 'hot', price: 1490, img: null, emoji: '🐱', tags: [] },
-  { id: 'choco-focinho', cat: 'hot', price: 1390, img: null, emoji: '🐶', tags: [] },
-  { id: 'cha-dragao', cat: 'hot', price: 1190, img: null, emoji: '🐉', tags: ['vegan'] },
-  { id: 'frappe-lobo', cat: 'cold', price: 1890, img: null, emoji: '🐺', tags: ['cold'] },
-  { id: 'suco-pata', cat: 'cold', price: 1290, img: null, emoji: '🍊', tags: ['vegan', 'cold'] },
-  { id: 'cold-brew-cauda', cat: 'cold', price: 1590, img: null, emoji: '🐿️', tags: ['new', 'cold'] },
-  { id: 'sanduiche-toca', cat: 'snacks', price: 2290, img: null, emoji: '🦡', tags: [] },
-  { id: 'biscoito-patinha', cat: 'snacks', price: 990, img: null, emoji: '🐾', tags: [] },
-  { id: 'pao-queijo-bigode', cat: 'snacks', price: 1190, img: null, emoji: '🐭', tags: [] },
+  { id: 'cappuccino-gato', cat: 'hot', price: 1490, img: IMG + 'menu-cappuccino-gato.png', emoji: '🐱', tags: [] },
+  { id: 'choco-focinho', cat: 'hot', price: 1390, img: IMG + 'menu-choco-focinho.png', emoji: '🐶', tags: [] },
+  { id: 'cha-dragao', cat: 'hot', price: 1190, img: IMG + 'menu-cha-dragao.png', emoji: '🐉', tags: ['vegan'] },
+  { id: 'frappe-lobo', cat: 'cold', price: 1890, img: IMG + 'menu-frappe-lobo.png', emoji: '🐺', tags: ['cold'] },
+  { id: 'suco-pata', cat: 'cold', price: 1290, img: IMG + 'menu-suco-pata.png', emoji: '🍊', tags: ['vegan', 'cold'] },
+  { id: 'cold-brew-cauda', cat: 'cold', price: 1590, img: IMG + 'menu-cold-brew-cauda.png', emoji: '🐿️', tags: ['new', 'cold'] },
+  { id: 'sanduiche-toca', cat: 'snacks', price: 2290, img: IMG + 'menu-sanduiche-toca.png', emoji: '🦡', tags: [] },
+  { id: 'biscoito-patinha', cat: 'snacks', price: 990, img: IMG + 'menu-biscoito-patinha.png', emoji: '🐾', tags: [] },
+  { id: 'pao-queijo-bigode', cat: 'snacks', price: 1190, img: IMG + 'menu-pao-queijo-bigode.png', emoji: '🐭', tags: [] },
   { id: 'paw-brownie', cat: 'desserts', price: 1450, img: IMG + 'menu-paw-brownie.png', emoji: '🐾', tags: ['signature'] },
-  { id: 'cupcake-raposa', cat: 'desserts', price: 1290, img: null, emoji: '🦊', tags: ['new'] },
-  { id: 'cheesecake-coelho', cat: 'desserts', price: 1690, img: null, emoji: '🐰', tags: [] }
+  { id: 'cupcake-raposa', cat: 'desserts', price: 1290, img: IMG + 'menu-cupcake-raposa.png', emoji: '🦊', tags: ['new'] },
+  { id: 'cheesecake-coelho', cat: 'desserts', price: 1690, img: IMG + 'menu-cheesecake-coelho.png', emoji: '🐰', tags: [] }
 ];
 
 const EVENTS = [
