@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Segurança: CSP restritiva (sem scripts/estilos inline, sem eval, sem origens externas) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'">
+  <!-- Documentação: navegadores ignoram X-Frame-Options em <meta>; o cabeçalho real é enviado pelo .htaccess e há proteção em security.js -->
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+  <meta name="description" content="Little Paw Coffee: a cafeteria aconchegante da comunidade furry, com cardápio temático, galeria de arte e eventos.">
+  <meta name="theme-color" content="#5C2D0E">
+  <title data-i18n="home.docTitle">Little Paw Coffee — Cafeteria da comunidade furry</title>
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/accessibility.css">
+  <script defer src="assets/js/security.js"></script>
+  <script defer src="assets/js/i18n.js"></script>
+  <script defer src="assets/js/lgpd.js"></script>
+  <script defer src="assets/js/data.js"></script>
+  <script defer src="assets/js/cart.js"></script>
+  <script defer src="assets/js/layout.js"></script>
+  <script defer src="assets/js/pages/home.js"></script>
+  <script defer src="assets/js/main.js"></script>
+</head>
+<body data-page="home" data-title-key="home.docTitle">
+  <a class="skip-link" href="#main" data-i18n="skip">Pular para o conteúdo principal</a>
+  <header id="site-header" class="site-header"></header>
+  <noscript><p class="noscript-note">Este site precisa de JavaScript para o carrinho, a galeria e a troca de idioma.</p></noscript>
+
+  <main id="main" tabindex="-1">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container hero__inner">
+        <div class="hero__text">
+          <p class="eyebrow" data-i18n="home.hero.eyebrow">Cafeteria da comunidade furry</p>
+          <h1 id="hero-title" data-i18n="home.hero.title">Bem-vindo à Little Paw Coffee</h1>
+          <p class="hero__subtitle" data-i18n="home.hero.subtitle">Grãos especiais brasileiros, petiscos em formato de patinha e arte feita pela comunidade.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary btn--large" href="cardapio.html" data-i18n="home.hero.ctaMenu">Ver o cardápio</a>
+            <a class="btn btn--outline btn--large" href="eventos.html" data-i18n="home.hero.ctaEvents">Próximos eventos</a>
+          </div>
+        </div>
+        <div class="hero__media">
+          <img src="assets/images/hero-banner.png" width="1376" height="768"
+               alt="Ilustração de uma raposa-fennec barista sorridente servindo café em um balcão de madeira aconchegante"
+               data-i18n-attr="alt:home.hero.alt">
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt paw-bg" id="sobre" aria-labelledby="about-title">
+      <div class="container about">
+        <div class="about__text">
+          <h2 id="about-title" class="section-title" data-i18n="home.about.title">Sobre Nós</h2>
+          <p data-i18n="home.about.p1"></p>
+          <p data-i18n="home.about.p2"></p>
+        </div>
+        <ul class="values" role="list">
+          <li class="value">
+            <span class="value__icon" aria-hidden="true">🦊</span>
+            <h3 data-i18n="home.about.v1.title">Todas as espécies são bem-vindas</h3>
+            <p data-i18n="home.about.v1.text"></p>
+          </li>
+          <li class="value">
+            <span class="value__icon" aria-hidden="true">☕</span>
+            <h3 data-i18n="home.about.v2.title">Café de origem brasileira</h3>
+            <p data-i18n="home.about.v2.text"></p>
+          </li>
+          <li class="value">
+            <span class="value__icon" aria-hidden="true">🎨</span>
+            <h3 data-i18n="home.about.v3.title">Arte da comunidade</h3>
+            <p data-i18n="home.about.v3.text"></p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="featured-title">
+      <div class="container">
+        <h2 id="featured-title" class="section-title" data-i18n="home.featured.title">Destaques</h2>
+        <p class="section-intro" data-i18n="home.featured.intro"></p>
+        <div class="grid grid--3" id="featured-grid" aria-live="off"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+</body>
+</html>

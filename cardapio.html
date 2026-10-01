@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'">
+  <!-- Documentação: o cabeçalho X-Frame-Options real é enviado pelo .htaccess -->
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+  <meta name="description" content="Cardápio temático da Little Paw Coffee: Paw Brownie, Latté da Raposa, Frappé do Lobo e muito mais.">
+  <meta name="theme-color" content="#5C2D0E">
+  <title data-i18n="menu.docTitle">Cardápio Temático — Little Paw Coffee</title>
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/accessibility.css">
+  <script defer src="assets/js/security.js"></script>
+  <script defer src="assets/js/i18n.js"></script>
+  <script defer src="assets/js/lgpd.js"></script>
+  <script defer src="assets/js/data.js"></script>
+  <script defer src="assets/js/cart.js"></script>
+  <script defer src="assets/js/layout.js"></script>
+  <script defer src="assets/js/pages/menu.js"></script>
+  <script defer src="assets/js/main.js"></script>
+</head>
+<body data-page="menu" data-title-key="menu.docTitle">
+  <a class="skip-link" href="#main" data-i18n="skip">Pular para o conteúdo principal</a>
+  <header id="site-header" class="site-header"></header>
+  <noscript><p class="noscript-note">Este site precisa de JavaScript para exibir o cardápio e o carrinho.</p></noscript>
+
+  <main id="main" tabindex="-1">
+    <section class="page-hero paw-bg" aria-labelledby="page-title">
+      <div class="container">
+        <h1 id="page-title" data-i18n="menu.title">Cardápio Temático</h1>
+        <p class="page-hero__intro" data-i18n="menu.intro"></p>
+        <nav data-i18n-attr="aria-label:menu.jump" aria-label="Ir para a categoria">
+          <ul class="chip-list" id="menu-jump"></ul>
+        </nav>
+      </div>
+    </section>
+
+    <div class="container">
+      <p class="notice notice--info" role="note">
+        <span aria-hidden="true">🔒</span>
+        <span data-i18n="menu.note">Pedido fictício para retirada no balcão.</span>
+      </p>
+      <div id="menu-root"></div>
+    </div>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+</body>
+</html>

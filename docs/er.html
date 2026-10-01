@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Diagrama Entidade-Relacionamento — Documentação Little Paw Coffee</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+<nav class="lateral" id="nav-docs" aria-label="Navegação da documentação"></nav>
+<main id="conteudo">
+<h1>Diagrama Entidade-Relacionamento</h1>
+<p>O diagrama representa as 9 tabelas definidas em <code>database/schema.sql</code>. Legenda: <code>PK</code> chave primária, <code>FK</code> chave estrangeira, <code>UK</code> chave única. Valores monetários são armazenados em centavos.</p>
+<figure class="diagrama"><pre class="mermaid">
+erDiagram
+  clientes ||--o{ pedidos : "realiza"
+  pedidos ||--|{ itens_pedido : "contém"
+  itens_cardapio ||--o{ itens_pedido : "aparece em"
+  clientes ||--o{ inscricoes_eventos : "faz"
+  eventos ||--o{ inscricoes_eventos : "recebe"
+  clientes |o--o{ cookies_consentimento : "registra"
+  sessoes_admin |o--o{ galeria_arte : "publica"
+
+  clientes {
+    INTEGER id_cliente PK
+    VARCHAR nome_exibicao
+    VARCHAR email UK
+    VARCHAR idioma_preferido
+    TIMESTAMP criado_em
+    TIMESTAMP atualizado_em
+    SMALLINT anonimizado
+    SMALLINT consentimento_marketing
+  }
+  itens_cardapio {
+    VARCHAR id_item PK
+    VARCHAR nome_pt
+    VARCHAR nome_en
+    VARCHAR descricao_pt
+    VARCHAR descricao_en
+    VARCHAR categoria
+    INTEGER preco_centavos
+    VARCHAR imagem_url
+    VARCHAR emoji
+    SMALLINT vegano
+    SMALLINT disponivel
+  }
+  pedidos {
+    INTEGER id_pedido PK
+    INTEGER id_cliente FK
+    CHAR codigo_retirada
+    INTEGER subtotal_centavos
+    INTEGER taxa_servico_centavos
+    INTEGER total_centavos
+    VARCHAR status
+    TIMESTAMP criado_em
+    VARCHAR observacao
+  }
+  itens_pedido {
+    INTEGER id_pedido PK,FK
+    VARCHAR id_item PK,FK
+    INTEGER quantidade
+    INTEGER preco_unitario_centavos
+  }
+  eventos {
+    VARCHAR id_evento PK
+    VARCHAR nome_pt
+    VARCHAR nome_en
+    VARCHAR descricao_pt
+    VARCHAR descricao_en
+    DATE data_evento
+    TIME hora_inicio
+    TIME hora_fim
+    INTEGER preco_centavos
+    INTEGER vagas
+    VARCHAR icone
+  }
+  inscricoes_eventos {
+    INTEGER id_inscricao PK
+    INTEGER id_cliente FK
+    VARCHAR id_evento FK
+    TIMESTAMP consentimento_em
+    VARCHAR status
+    TIMESTAMP criado_em
+  }
+  sessoes_admin {
+    INTEGER id_sessao PK
+    CHAR token_hash UK
+    TIMESTAMP criado_em
+    TIMESTAMP expira_em
+    SMALLINT encerrada
+    INTEGER tentativas_falhas
+  }
+  galeria_arte {
+    VARCHAR id_arte PK
+    VARCHAR titulo
+    VARCHAR artista
+    VARCHAR descricao
+    VARCHAR texto_alt
+    VARCHAR caminho_imagem
+    VARCHAR tipo_mime
+    SMALLINT visivel
+    INTEGER id_sessao FK
+    TIMESTAMP publicado_em
+  }
+  cookies_consentimento {
+    INTEGER id_consentimento PK
+    INTEGER id_cliente FK
+    CHAR identificador_anon
+    INTEGER versao_politica
+    VARCHAR status
+    SMALLINT essenciais
+    SMALLINT preferencias
+    TIMESTAMP registrado_em
+  }
+</pre><figcaption>Figura 1 — Modelo entidade-relacionamento do Little Paw Coffee</figcaption></figure>
+
+<h2>1 Cardinalidades</h2>
+<h3>1.1 Relacionamentos 1:N</h3>
+<ul>
+<li><strong>clientes (1) : pedidos (N)</strong> — Um cliente pode realizar múltiplos pedidos, mas cada pedido pertence a no máximo um cliente. A FK <code>id_cliente</code> é opcional (pedido anônimo) e recebe NULL se o cliente for eliminado (<code>ON DELETE SET NULL</code>).</li>
+<li><strong>pedidos (1) : itens_pedido (N)</strong> — Um pedido contém uma ou mais linhas de item; cada linha pertence a um único pedido. A exclusão do pedido remove suas linhas (<code>CASCADE</code>).</li>
+<li><strong>itens_cardapio (1) : itens_pedido (N)</strong> — Um item do cardápio pode aparecer em vários pedidos; cada linha referencia um único item. A exclusão de um item já vendido é impedida (<code>RESTRICT</code>).</li>
+<li><strong>clientes (1) : inscricoes_eventos (N)</strong> — Um cliente pode se inscrever em vários eventos; cada inscrição pertence a um único cliente.</li>
+<li><strong>eventos (1) : inscricoes_eventos (N)</strong> — Um evento recebe várias inscrições, limitadas pelo número de vagas; cada inscrição refere-se a um único evento.</li>
+<li><strong>sessoes_admin (0..1) : galeria_arte (N)</strong> — Uma sessão administrativa pode publicar várias obras; cada obra foi publicada por no máximo uma sessão (NULL para o acervo original).</li>
+<li><strong>clientes (0..1) : cookies_consentimento (N)</strong> — Um cliente pode ter vários registros de consentimento (histórico de versões da política); visitantes anônimos são identificados apenas por UUID aleatório, sem IP.</li>
+</ul>
+<h3>1.2 Relacionamentos N:M</h3>
+<ul>
+<li><strong>pedidos (N) : itens_cardapio (M)</strong> — Resolvido pela tabela associativa <code>itens_pedido</code>, cuja PK composta (<code>id_pedido</code>, <code>id_item</code>) impede itens duplicados no mesmo pedido e guarda quantidade (1 a 20) e preço congelado.</li>
+<li><strong>clientes (N) : eventos (M)</strong> — Resolvido por <code>inscricoes_eventos</code>; a restrição UNIQUE (<code>id_cliente</code>, <code>id_evento</code>) impede inscrição dupla.</li>
+</ul>
+<h3>1.3 Relacionamentos 1:1</h3>
+<ul>
+<li><strong>pedidos (1) : codigo_retirada (1)</strong> — Não há tabelas em relação 1:1 no esquema; o vínculo 1:1 ocorre no nível de atributo: cada pedido possui exatamente um código de retirada, e a combinação (<code>codigo_retirada</code>, <code>status</code>) é indexada para localização rápida no balcão.</li>
+<li><strong>inscricoes_eventos (1) : consentimento_em (1)</strong> — Cada inscrição registra exatamente um momento de consentimento (LGPD, art. 7.º, I).</li>
+</ul>
+<p class="nota">Por decisão de projeto, nenhuma tabela possui colunas de pagamento ou de cartão.</p>
+
+<h2>2 Comandos SQL (CREATE TABLE)</h2>
+<h3>2.1 clientes</h3>
+<pre><code class="language-sql">CREATE TABLE clientes (
+    id_cliente        INTEGER      NOT NULL PRIMARY KEY,
+    nome_exibicao     VARCHAR(80)  NOT NULL,              -- nome ou apelido furry
+    email             VARCHAR(254) NOT NULL,
+    idioma_preferido  VARCHAR(5)   NOT NULL DEFAULT &#x27;pt-BR&#x27;,
+    criado_em         TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em     TIMESTAMP    NULL,
+    anonimizado       SMALLINT     NOT NULL DEFAULT 0,   -- 1 = dados anonimizados (LGPD art. 18, IV)
+    CONSTRAINT uq_clientes_email UNIQUE (email),
+    CONSTRAINT ck_clientes_idioma CHECK (idioma_preferido IN (&#x27;pt-BR&#x27;, &#x27;en&#x27;)),
+    CONSTRAINT ck_clientes_anonimizado CHECK (anonimizado IN (0, 1))
+);</code></pre>
+<h3>2.2 itens_cardapio</h3>
+<pre><code class="language-sql">CREATE TABLE itens_cardapio (
+    id_item           VARCHAR(64)  NOT NULL PRIMARY KEY,  -- ex.: &#x27;paw-brownie&#x27;
+    nome_pt           VARCHAR(80)  NOT NULL,
+    nome_en           VARCHAR(80)  NOT NULL,
+    descricao_pt      VARCHAR(300) NOT NULL,
+    descricao_en      VARCHAR(300) NOT NULL,
+    categoria         VARCHAR(20)  NOT NULL,
+    preco_centavos    INTEGER      NOT NULL,
+    imagem_url        VARCHAR(255) NULL,
+    emoji             VARCHAR(16)  NULL,
+    vegano            SMALLINT     NOT NULL DEFAULT 0,
+    disponivel        SMALLINT     NOT NULL DEFAULT 1,
+    CONSTRAINT ck_itens_categoria CHECK (categoria IN (&#x27;hot&#x27;, &#x27;cold&#x27;, &#x27;snacks&#x27;, &#x27;desserts&#x27;)),
+    CONSTRAINT ck_itens_preco CHECK (preco_centavos &gt; 0),
+    CONSTRAINT ck_itens_vegano CHECK (vegano IN (0, 1)),
+    CONSTRAINT ck_itens_disponivel CHECK (disponivel IN (0, 1))
+);</code></pre>
+<h3>2.3 pedidos</h3>
+<pre><code class="language-sql">CREATE TABLE pedidos (
+    id_pedido             INTEGER     NOT NULL PRIMARY KEY,
+    id_cliente            INTEGER     NULL,
+    codigo_retirada       CHAR(4)     NOT NULL,
+    subtotal_centavos     INTEGER     NOT NULL,
+    taxa_servico_centavos INTEGER     NOT NULL,   -- 10% do subtotal
+    total_centavos        INTEGER     NOT NULL,
+    status                VARCHAR(20) NOT NULL DEFAULT &#x27;registrado&#x27;,
+    criado_em             TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_pedidos_cliente FOREIGN KEY (id_cliente)
+        REFERENCES clientes (id_cliente) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT ck_pedidos_status CHECK (status IN (&#x27;registrado&#x27;, &#x27;preparando&#x27;, &#x27;pronto&#x27;, &#x27;retirado&#x27;, &#x27;cancelado&#x27;)),
+    CONSTRAINT ck_pedidos_valores CHECK (subtotal_centavos &gt;= 0 AND taxa_servico_centavos &gt;= 0
+                                         AND total_centavos = subtotal_centavos + taxa_servico_centavos)
+);</code></pre>
+<h3>2.4 itens_pedido</h3>
+<pre><code class="language-sql">CREATE TABLE itens_pedido (
+    id_pedido               INTEGER     NOT NULL,
+    id_item                 VARCHAR(64) NOT NULL,
+    quantidade              INTEGER     NOT NULL,
+    preco_unitario_centavos INTEGER     NOT NULL,  -- preço congelado no momento do pedido
+    PRIMARY KEY (id_pedido, id_item),
+    CONSTRAINT fk_itens_pedido_pedido FOREIGN KEY (id_pedido)
+        REFERENCES pedidos (id_pedido) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_itens_pedido_item FOREIGN KEY (id_item)
+        REFERENCES itens_cardapio (id_item) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT ck_itens_pedido_qtd CHECK (quantidade BETWEEN 1 AND 20),
+    CONSTRAINT ck_itens_pedido_preco CHECK (preco_unitario_centavos &gt; 0)
+);</code></pre>
+<h3>2.5 eventos</h3>
+<pre><code class="language-sql">CREATE TABLE eventos (
+    id_evento        VARCHAR(64)  NOT NULL PRIMARY KEY,   -- ex.: &#x27;arte-furry&#x27;
+    nome_pt          VARCHAR(100) NOT NULL,
+    nome_en          VARCHAR(100) NOT NULL,
+    descricao_pt     VARCHAR(500) NOT NULL,
+    descricao_en     VARCHAR(500) NOT NULL,
+    data_evento      DATE         NOT NULL,
+    hora_inicio      TIME         NOT NULL,
+    hora_fim         TIME         NOT NULL,
+    preco_centavos   INTEGER      NOT NULL DEFAULT 0,     -- 0 = gratuito
+    vagas            INTEGER      NOT NULL,
+    icone            VARCHAR(16)  NULL,
+    CONSTRAINT ck_eventos_preco CHECK (preco_centavos &gt;= 0),
+    CONSTRAINT ck_eventos_vagas CHECK (vagas &gt; 0)
+);</code></pre>
+<h3>2.6 inscricoes_eventos</h3>
+<pre><code class="language-sql">CREATE TABLE inscricoes_eventos (
+    id_inscricao        INTEGER     NOT NULL PRIMARY KEY,
+    id_cliente          INTEGER     NOT NULL,
+    id_evento           VARCHAR(64) NOT NULL,
+    consentimento_em    TIMESTAMP   NOT NULL,              -- LGPD art. 7º, I
+    status              VARCHAR(20) NOT NULL DEFAULT &#x27;confirmada&#x27;,
+    criado_em           TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_inscricoes_cliente FOREIGN KEY (id_cliente)
+        REFERENCES clientes (id_cliente) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_inscricoes_evento FOREIGN KEY (id_evento)
+        REFERENCES eventos (id_evento) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT uq_inscricao_cliente_evento UNIQUE (id_cliente, id_evento),
+    CONSTRAINT ck_inscricoes_status CHECK (status IN (&#x27;confirmada&#x27;, &#x27;cancelada&#x27;, &#x27;presente&#x27;))
+);</code></pre>
+<h3>2.7 sessoes_admin</h3>
+<pre><code class="language-sql">CREATE TABLE sessoes_admin (
+    id_sessao          INTEGER      NOT NULL PRIMARY KEY,
+    token_hash         CHAR(64)     NOT NULL,     -- SHA-256 do token (o token nunca é salvo)
+    criado_em          TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expira_em          TIMESTAMP    NOT NULL,     -- 30 minutos de inatividade
+    encerrada          SMALLINT     NOT NULL DEFAULT 0,
+    tentativas_falhas  INTEGER      NOT NULL DEFAULT 0,
+    CONSTRAINT uq_sessoes_token UNIQUE (token_hash),
+    CONSTRAINT ck_sessoes_encerrada CHECK (encerrada IN (0, 1))
+);</code></pre>
+<h3>2.8 galeria_arte</h3>
+<pre><code class="language-sql">CREATE TABLE galeria_arte (
+    id_arte         VARCHAR(64)  NOT NULL PRIMARY KEY,
+    titulo          VARCHAR(80)  NOT NULL,
+    artista         VARCHAR(60)  NOT NULL,
+    descricao       VARCHAR(300) NULL,
+    texto_alt       VARCHAR(200) NOT NULL,       -- acessibilidade (WCAG 1.1.1)
+    caminho_imagem  VARCHAR(255) NOT NULL,       -- arquivo reprocessado, sem EXIF
+    tipo_mime       VARCHAR(20)  NOT NULL DEFAULT &#x27;image/jpeg&#x27;,
+    visivel         SMALLINT     NOT NULL DEFAULT 1,
+    id_sessao       INTEGER      NULL,
+    publicado_em    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_galeria_sessao FOREIGN KEY (id_sessao)
+        REFERENCES sessoes_admin (id_sessao) ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT ck_galeria_mime CHECK (tipo_mime IN (&#x27;image/jpeg&#x27;, &#x27;image/png&#x27;, &#x27;image/webp&#x27;)),
+    CONSTRAINT ck_galeria_visivel CHECK (visivel IN (0, 1))
+);</code></pre>
+<h3>2.9 cookies_consentimento</h3>
+<pre><code class="language-sql">CREATE TABLE cookies_consentimento (
+    id_consentimento   INTEGER     NOT NULL PRIMARY KEY,
+    id_cliente         INTEGER     NULL,
+    identificador_anon CHAR(36)    NULL,          -- UUID aleatório, sem IP
+    versao_politica    INTEGER     NOT NULL,
+    status             VARCHAR(10) NOT NULL,
+    essenciais         SMALLINT    NOT NULL DEFAULT 1,
+    preferencias       SMALLINT    NOT NULL DEFAULT 0,
+    registrado_em      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_consentimento_cliente FOREIGN KEY (id_cliente)
+        REFERENCES clientes (id_cliente) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT ck_consentimento_status CHECK (status IN (&#x27;accepted&#x27;, &#x27;declined&#x27;)),
+    CONSTRAINT ck_consentimento_flags CHECK (essenciais = 1 AND preferencias IN (0, 1))
+);</code></pre>
+<h3>2.10 Evolução do esquema (ALTER TABLE)</h3>
+<pre><code class="language-sql">ALTER TABLE pedidos ADD COLUMN observacao VARCHAR(200) NULL;
+ALTER TABLE clientes ADD COLUMN consentimento_marketing SMALLINT NOT NULL DEFAULT 0;</code></pre>
+
+<footer><p>Little Paw Coffee — Documentação técnica do projeto. Texto em português do Brasil. Versão 1.0, outubro de 2026.</p></footer>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/sql.min.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>

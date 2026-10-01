@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Início — Documentação Little Paw Coffee</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+<nav class="lateral" id="nav-docs" aria-label="Navegação da documentação"></nav>
+<main id="conteudo">
+<h1>Documentação do Projeto Little Paw Coffee</h1>
+<div class="card">
+<h2 style="margin-top:0">Resumo do projeto</h2>
+<p>O <strong>Little Paw Coffee</strong> é o site de uma cafeteria temática voltada à comunidade <em>furry</em> e ao público em geral. O site é estático (HTML5, CSS3 e JavaScript puro), bilíngue (português do Brasil por padrão, com botão para inglês), acessível (WCAG 2.1 AA) e projetado conforme a Lei Geral de Proteção de Dados Pessoais (LGPD, Lei n.º 13.709/2018).</p>
+<ul>
+<li><strong>Páginas:</strong> Início, Cardápio Temático, Galeria de Arte Furry (com envio de imagens pelo administrador), Eventos, Carrinho e Privacidade.</li>
+<li><strong>Carrinho fictício:</strong> gera um código de retirada no balcão; não há meios de pagamento nem coleta de dados de cartão.</li>
+<li><strong>Banco de dados:</strong> esquema SQL com 9 tabelas (<code>database/schema.sql</code>) para a futura versão com servidor.</li>
+</ul>
+</div>
+<h2>Seções da documentação</h2>
+<div class="grade">
+<div class="card"><h3><a href="escopo.html">1. Escopo e Estrutura</a></h3><p>Propósito, público-alvo, tecnologias, funcionalidades e segurança.</p></div>
+<div class="card"><h3><a href="atividade.html">2. Diagramas de Atividade</a></h3><p>Fluxos de pedido, galeria, inscrição em eventos e consentimento.</p></div>
+<div class="card"><h3><a href="er.html">3. Diagrama Entidade-Relacionamento</a></h3><p>Tabelas, atributos, cardinalidades e comandos SQL.</p></div>
+<div class="card"><h3><a href="conexao.html">4. Conexão com o Banco</a></h3><p>Arquitetura atual e futura, índices e plano de migração.</p></div>
+<div class="card"><h3><a href="estrutura.html">5. Arquivos e Padrões</a></h3><p>Árvore de arquivos, padrões de código e guias de extensão.</p></div>
+</div>
+<footer><p>Little Paw Coffee — Documentação técnica do projeto. Texto em português do Brasil. Versão 1.0, outubro de 2026.</p></footer>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/sql.min.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>

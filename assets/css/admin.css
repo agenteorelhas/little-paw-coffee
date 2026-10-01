@@ -1,0 +1,52 @@
+/* ==========================================================================
+   Little Paw Coffee — admin.css
+   Estilos do modo administrador da galeria.
+   ========================================================================== */
+
+.admin-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+.admin-bar #admin-btn[aria-pressed="true"] {
+  background: var(--color-link);
+  color: #fff;
+}
+.admin-status {
+  flex-basis: 100%;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--color-link);
+}
+.admin-status::before { content: "🟦 "; }
+
+.admin-panel {
+  margin-block: var(--space-5);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background:
+    repeating-linear-gradient(45deg, rgba(92, 45, 14, 0.03) 0 12px, transparent 12px 24px),
+    var(--color-surface-alt);
+  border: 3px dashed var(--color-secondary);
+  outline: none;
+}
+.admin-panel__grid { display: grid; gap: var(--space-5); }
+.admin-side { display: grid; gap: var(--space-5); align-content: start; }
+.admin-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+}
+.admin-card__title { font-size: 1.3rem; }
+
+/* Botão de exclusão visível somente no modo admin */
+body.is-admin .art-card { border-color: var(--color-secondary); }
+body.is-admin .art-card .btn--danger { align-self: flex-start; margin-top: var(--space-2); }
+
+@media (min-width: 900px) {
+  .admin-panel__grid { grid-template-columns: 1.4fr 1fr; }
+}

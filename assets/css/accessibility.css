@@ -1,0 +1,88 @@
+/* ==========================================================================
+   Little Paw Coffee — accessibility.css
+   Foco visível, link de pular conteúdo, utilitários para leitores de tela,
+   movimento reduzido e suporte a alto contraste (WCAG 2.1 AA).
+   ========================================================================== */
+
+/* Foco visível em todos os elementos interativos */
+:focus-visible {
+  outline: 3px solid #C4622D;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid #C4622D;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(253, 246, 227, 0.9);
+}
+.site-footer :focus-visible { outline-color: #FFD9A8; box-shadow: none; }
+main:focus, main:focus-visible, h1[tabindex="-1"]:focus { outline: none; box-shadow: none; }
+
+/* Link "Pular para o conteúdo" */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  z-index: 1000;
+  padding: 0.75rem 1.25rem;
+  background: #5C2D0E;
+  color: #FFF8EC;
+  font-weight: 700;
+  border-radius: 0 0 12px 12px;
+  text-decoration: none;
+  transition: top 150ms ease;
+}
+.skip-link:focus, .skip-link:focus-visible { top: 0; color: #FFF8EC; }
+
+/* Somente leitores de tela */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Áreas de toque mínimas (WCAG 2.5.5) */
+.nav-link, .chip, .footer-links a, .footer-links .link-button { min-height: 44px; display: inline-flex; align-items: center; }
+.nav-link { display: flex; }
+
+/* Movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Alto contraste (Windows / forced colors) */
+@media (forced-colors: active) {
+  .btn, .chip, .lang-toggle, .cart-link, .qty-btn, .social-icon, .tag { border: 2px solid ButtonText; }
+  .cart-badge { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+  :focus-visible { outline: 3px solid Highlight; }
+  .paw-bg::before, .paw-bg::after, .site-footer::before { display: none; }
+}
+
+/* Preferência por mais contraste */
+@media (prefers-contrast: more) {
+  :root {
+    --color-muted: #2E1F12;
+    --color-border: #7B4F2E;
+    --color-accent-strong: #7A3512;
+  }
+  .card, .art-card, .form-card, .value { border-width: 2px; }
+  .notice { border-left-width: 8px; }
+}
+
+/* Impressão */
+@media print {
+  .site-header, .site-footer, .cookie-banner, .toast-region, .skip-link, .btn { display: none !important; }
+  body { background: #fff; color: #000; }
+}

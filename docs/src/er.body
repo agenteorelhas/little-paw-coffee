@@ -1,0 +1,130 @@
+<h1>Diagrama Entidade-Relacionamento</h1>
+<p>O diagrama representa as 9 tabelas definidas em <code>database/schema.sql</code>. Legenda: <code>PK</code> chave primária, <code>FK</code> chave estrangeira, <code>UK</code> chave única. Valores monetários são armazenados em centavos.</p>
+<figure class="diagrama"><pre class="mermaid">
+erDiagram
+  clientes ||--o{ pedidos : "realiza"
+  pedidos ||--|{ itens_pedido : "contém"
+  itens_cardapio ||--o{ itens_pedido : "aparece em"
+  clientes ||--o{ inscricoes_eventos : "faz"
+  eventos ||--o{ inscricoes_eventos : "recebe"
+  clientes |o--o{ cookies_consentimento : "registra"
+  sessoes_admin |o--o{ galeria_arte : "publica"
+
+  clientes {
+    INTEGER id_cliente PK
+    VARCHAR nome_exibicao
+    VARCHAR email UK
+    VARCHAR idioma_preferido
+    TIMESTAMP criado_em
+    TIMESTAMP atualizado_em
+    SMALLINT anonimizado
+    SMALLINT consentimento_marketing
+  }
+  itens_cardapio {
+    VARCHAR id_item PK
+    VARCHAR nome_pt
+    VARCHAR nome_en
+    VARCHAR descricao_pt
+    VARCHAR descricao_en
+    VARCHAR categoria
+    INTEGER preco_centavos
+    VARCHAR imagem_url
+    VARCHAR emoji
+    SMALLINT vegano
+    SMALLINT disponivel
+  }
+  pedidos {
+    INTEGER id_pedido PK
+    INTEGER id_cliente FK
+    CHAR codigo_retirada
+    INTEGER subtotal_centavos
+    INTEGER taxa_servico_centavos
+    INTEGER total_centavos
+    VARCHAR status
+    TIMESTAMP criado_em
+    VARCHAR observacao
+  }
+  itens_pedido {
+    INTEGER id_pedido PK,FK
+    VARCHAR id_item PK,FK
+    INTEGER quantidade
+    INTEGER preco_unitario_centavos
+  }
+  eventos {
+    VARCHAR id_evento PK
+    VARCHAR nome_pt
+    VARCHAR nome_en
+    VARCHAR descricao_pt
+    VARCHAR descricao_en
+    DATE data_evento
+    TIME hora_inicio
+    TIME hora_fim
+    INTEGER preco_centavos
+    INTEGER vagas
+    VARCHAR icone
+  }
+  inscricoes_eventos {
+    INTEGER id_inscricao PK
+    INTEGER id_cliente FK
+    VARCHAR id_evento FK
+    TIMESTAMP consentimento_em
+    VARCHAR status
+    TIMESTAMP criado_em
+  }
+  sessoes_admin {
+    INTEGER id_sessao PK
+    CHAR token_hash UK
+    TIMESTAMP criado_em
+    TIMESTAMP expira_em
+    SMALLINT encerrada
+    INTEGER tentativas_falhas
+  }
+  galeria_arte {
+    VARCHAR id_arte PK
+    VARCHAR titulo
+    VARCHAR artista
+    VARCHAR descricao
+    VARCHAR texto_alt
+    VARCHAR caminho_imagem
+    VARCHAR tipo_mime
+    SMALLINT visivel
+    INTEGER id_sessao FK
+    TIMESTAMP publicado_em
+  }
+  cookies_consentimento {
+    INTEGER id_consentimento PK
+    INTEGER id_cliente FK
+    CHAR identificador_anon
+    INTEGER versao_politica
+    VARCHAR status
+    SMALLINT essenciais
+    SMALLINT preferencias
+    TIMESTAMP registrado_em
+  }
+</pre><figcaption>Figura 1 — Modelo entidade-relacionamento do Little Paw Coffee</figcaption></figure>
+
+<h2>1 Cardinalidades</h2>
+<h3>1.1 Relacionamentos 1:N</h3>
+<ul>
+<li><strong>clientes (1) : pedidos (N)</strong> — Um cliente pode realizar múltiplos pedidos, mas cada pedido pertence a no máximo um cliente. A FK <code>id_cliente</code> é opcional (pedido anônimo) e recebe NULL se o cliente for eliminado (<code>ON DELETE SET NULL</code>).</li>
+<li><strong>pedidos (1) : itens_pedido (N)</strong> — Um pedido contém uma ou mais linhas de item; cada linha pertence a um único pedido. A exclusão do pedido remove suas linhas (<code>CASCADE</code>).</li>
+<li><strong>itens_cardapio (1) : itens_pedido (N)</strong> — Um item do cardápio pode aparecer em vários pedidos; cada linha referencia um único item. A exclusão de um item já vendido é impedida (<code>RESTRICT</code>).</li>
+<li><strong>clientes (1) : inscricoes_eventos (N)</strong> — Um cliente pode se inscrever em vários eventos; cada inscrição pertence a um único cliente.</li>
+<li><strong>eventos (1) : inscricoes_eventos (N)</strong> — Um evento recebe várias inscrições, limitadas pelo número de vagas; cada inscrição refere-se a um único evento.</li>
+<li><strong>sessoes_admin (0..1) : galeria_arte (N)</strong> — Uma sessão administrativa pode publicar várias obras; cada obra foi publicada por no máximo uma sessão (NULL para o acervo original).</li>
+<li><strong>clientes (0..1) : cookies_consentimento (N)</strong> — Um cliente pode ter vários registros de consentimento (histórico de versões da política); visitantes anônimos são identificados apenas por UUID aleatório, sem IP.</li>
+</ul>
+<h3>1.2 Relacionamentos N:M</h3>
+<ul>
+<li><strong>pedidos (N) : itens_cardapio (M)</strong> — Resolvido pela tabela associativa <code>itens_pedido</code>, cuja PK composta (<code>id_pedido</code>, <code>id_item</code>) impede itens duplicados no mesmo pedido e guarda quantidade (1 a 20) e preço congelado.</li>
+<li><strong>clientes (N) : eventos (M)</strong> — Resolvido por <code>inscricoes_eventos</code>; a restrição UNIQUE (<code>id_cliente</code>, <code>id_evento</code>) impede inscrição dupla.</li>
+</ul>
+<h3>1.3 Relacionamentos 1:1</h3>
+<ul>
+<li><strong>pedidos (1) : codigo_retirada (1)</strong> — Não há tabelas em relação 1:1 no esquema; o vínculo 1:1 ocorre no nível de atributo: cada pedido possui exatamente um código de retirada, e a combinação (<code>codigo_retirada</code>, <code>status</code>) é indexada para localização rápida no balcão.</li>
+<li><strong>inscricoes_eventos (1) : consentimento_em (1)</strong> — Cada inscrição registra exatamente um momento de consentimento (LGPD, art. 7.º, I).</li>
+</ul>
+<p class="nota">Por decisão de projeto, nenhuma tabela possui colunas de pagamento ou de cartão.</p>
+
+<h2>2 Comandos SQL (CREATE TABLE)</h2>
+__SQL__

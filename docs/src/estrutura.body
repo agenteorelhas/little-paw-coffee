@@ -1,0 +1,70 @@
+<h1>Estrutura de Arquivos e Padrões de Código</h1>
+<h2>1 Árvore anotada</h2>
+<pre><code class="language-plaintext">little-paw-coffee/
+├── *.html                  Uma página por arquivo (nomes em português)
+├── assets/css/main.css     Tokens de design (cores, espaçamentos) e layout
+├── assets/css/accessibility.css  Foco visível, movimento reduzido, alto contraste
+├── assets/css/admin.css    Estilos do painel da galeria
+├── assets/js/security.js   Base de segurança — carregado primeiro
+├── assets/js/i18n.js       Traduções (data-i18n)
+├── assets/js/lgpd.js       Consentimento
+├── assets/js/data.js       Dados estáticos (catálogo, eventos, galeria)
+├── assets/js/cart.js       Carrinho
+├── assets/js/layout.js     Cabeçalho/rodapé e navegação
+├── assets/js/main.js       Inicialização global
+├── assets/js/pages/*.js    Lógica específica de cada página
+├── database/               schema.sql e seed.sql
+└── docs/                   Documentação (este conteúdo)</code></pre>
+
+<h2>2 Guia de estilo</h2>
+<ul>
+<li><strong>Arquivos e URLs:</strong> português, minúsculas, sem acentos (<code>cardapio.html</code>, <code>eventos.html</code>).</li>
+<li><strong>Banco de dados:</strong> <em>snake_case</em> em português (<code>itens_pedido</code>, <code>preco_centavos</code>).</li>
+<li><strong>JavaScript:</strong> <em>camelCase</em> para funções e variáveis, <em>PascalCase</em> para objetos/classes (<code>Cart</code>, <code>ConsentManager</code>), MAIÚSCULAS para constantes (<code>CATALOG</code>).</li>
+<li><strong>Padrão de módulo:</strong> cada arquivo é uma IIFE em modo estrito que expõe um único objeto no escopo global; a comunicação entre módulos usa eventos personalizados (<code>lpc:ready</code>, <code>lpc:langchange</code>, <code>lpc:cartchange</code>, <code>lpc:consentchange</code>).</li>
+<li><strong>Segurança:</strong> nunca usar <code>innerHTML</code> com dados variáveis; usar <code>el()</code> e <code>textContent</code>; acessar o armazenamento só via <code>SafeStorage</code>; sem scripts embutidos (CSP).</li>
+<li><strong>Textos:</strong> português do Brasil conforme a norma culta; todo texto visível deve ter chave de tradução.</li>
+<li><strong>Valores monetários:</strong> sempre em centavos (inteiros).</li>
+</ul>
+<pre><code class="language-javascript">(function (global) {
+  'use strict';
+  const MeuModulo = {
+    iniciar() { /* ... */ }
+  };
+  document.addEventListener('lpc:ready', () => MeuModulo.iniciar());
+  global.MeuModulo = MeuModulo;
+})(window);</code></pre>
+
+<h2 id="nova-pagina">3 Como adicionar uma nova página</h2>
+<ol>
+<li>Copie <code>index.html</code> para o novo arquivo (ex.: <code>blog.html</code>), mantendo as metatags de segurança, os contêineres <code>#site-header</code>/<code>#site-footer</code> e a ordem dos scripts.</li>
+<li>Substitua o conteúdo de <code>&lt;main&gt;</code>, usando atributos <code>data-i18n</code> em todos os textos.</li>
+<li>Registre o item de navegação no mapa de rotas de <code>assets/js/layout.js</code>.</li>
+<li>Adicione as chaves de tradução (PT-BR e EN) em <code>assets/js/i18n.js</code>, incluindo o título do menu.</li>
+<li>Se houver lógica própria, crie <code>assets/js/pages/blog.js</code> e inclua-o por último.</li>
+<li>Teste a navegação por teclado, o contraste e a troca de idioma.</li>
+</ol>
+
+<h2>4 Como adicionar um item ao cardápio</h2>
+<ol>
+<li>Inclua um objeto em <code>CATALOG</code> (<code>assets/js/data.js</code>) com identificador único, categoria (<code>hot</code>, <code>cold</code>, <code>snacks</code> ou <code>desserts</code>), preço em centavos e nomes/descrições em PT-BR e EN.</li>
+<li>Opcionalmente, adicione a imagem em <code>assets/images/</code>.</li>
+<li>Para o banco, insira a linha correspondente em <code>itens_cardapio</code> no <code>seed.sql</code>.</li>
+</ol>
+<pre><code class="language-sql">INSERT INTO itens_cardapio (id_item, nome_pt, nome_en, descricao_pt, descricao_en, categoria, preco_centavos, emoji, vegano)
+VALUES ('cookie-patinha', 'Cookie Patinha', 'Paw Cookie', 'Cookie em formato de patinha.', 'Paw-shaped cookie.', 'desserts', 900, '🍪', 0);</code></pre>
+
+<h2>5 Como adicionar um evento</h2>
+<ol>
+<li>Inclua um objeto em <code>EVENTS</code> (<code>data.js</code>) com identificador, data (AAAA-MM-DD), horários, vagas, preço em centavos e textos bilíngues.</li>
+<li>Insira o registro correspondente na tabela <code>eventos</code> do <code>seed.sql</code>.</li>
+</ol>
+
+<h2>6 Internacionalização (i18n)</h2>
+<ol>
+<li>Adicione a chave nos dois dicionários de <code>i18n.js</code> (<code>'pt-BR'</code> e <code>en</code>).</li>
+<li>No HTML, use <code>data-i18n="chave"</code> para texto e <code>data-i18n-attr="atributo:chave"</code> para atributos (ex.: <code>aria-label</code>, <code>placeholder</code>).</li>
+<li>Para textos gerados em JavaScript, use a função de tradução do objeto <code>I18n</code> e ouça <code>lpc:langchange</code> para renderizar novamente.</li>
+</ol>
+<pre><code class="language-html">&lt;h2 data-i18n="blog.title"&gt;Blog da Cafeteria&lt;/h2&gt;
+&lt;input data-i18n-attr="placeholder:blog.search"&gt;</code></pre>

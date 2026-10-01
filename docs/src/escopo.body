@@ -1,0 +1,59 @@
+<h1>Escopo e Estrutura do Projeto</h1>
+<h2>1 Propósito</h2>
+<p>Oferecer à cafeteria Little Paw Coffee uma presença digital acolhedora que apresente o cardápio temático, divulgue eventos da comunidade, exponha arte furry e permita montar pedidos fictícios para retirada no balcão, sempre com foco na segurança e na privacidade do usuário.</p>
+<h2>2 Público-alvo</h2>
+<ul><li>Comunidade furry (artistas, <em>fursuiters</em> e entusiastas).</li><li>Público em geral interessado em café, doces temáticos e eventos culturais.</li><li>Visitantes estrangeiros (versão em inglês).</li></ul>
+<h2>3 Objetivos</h2>
+<ol><li>Apresentar o cardápio com itens temáticos (por exemplo, <em>Paw Brownie</em>).</li><li>Divulgar e receber inscrições (RSVP) para eventos.</li><li>Exibir e administrar uma galeria de arte furry.</li><li>Garantir conformidade com a LGPD e boas práticas de cibersegurança.</li><li>Ser acessível (WCAG 2.1 AA) e responsivo.</li></ol>
+<h2>4 Tecnologias</h2>
+<table><caption>Tabela 1 — Pilha tecnológica</caption>
+<thead><tr><th>Tecnologia</th><th>Uso no projeto</th></tr></thead><tbody>
+<tr><td>HTML5</td><td>Estrutura semântica das páginas, metatags de segurança (CSP, <em>referrer</em>).</td></tr>
+<tr><td>CSS3</td><td>Variáveis de tema, layout responsivo, foco visível, alto contraste.</td></tr>
+<tr><td>JavaScript (Vanilla)</td><td>Carrinho, internacionalização, consentimento LGPD, galeria administrativa, Web Crypto (SHA-256).</td></tr>
+<tr><td>SQL (SQLite/MySQL)</td><td>Esquema e dados iniciais para a futura versão com servidor.</td></tr>
+</tbody></table>
+<h2>5 Estrutura de diretórios</h2>
+<pre><code class="language-plaintext">little-paw-coffee/
+├── index.html            Página inicial (hero, sobre nós, destaques)
+├── cardapio.html         Cardápio temático com botão "adicionar ao carrinho"
+├── carrinho.html         Carrinho fictício e geração do código de retirada
+├── eventos.html          Eventos da cafeteria e formulário de RSVP
+├── galeria.html          Galeria de arte furry e painel do administrador
+├── privacidade.html      Política de privacidade e direitos do titular (LGPD)
+├── .htaccess             Cabeçalhos HTTP de segurança (Apache)
+├── README.md             Instruções gerais
+├── assets/
+│   ├── css/  main.css · accessibility.css · admin.css
+│   ├── images/           Logotipo, banner, artes e fotos do cardápio
+│   └── js/
+│       ├── security.js   Sanitização, validação, SafeStorage, SHA-256
+│       ├── i18n.js       Dicionários PT-BR/EN e troca de idioma
+│       ├── lgpd.js       Gerenciador de consentimento (banner de cookies)
+│       ├── data.js       Catálogo, categorias, eventos e acervo da galeria
+│       ├── cart.js       Classe Cart (localStorage "lpc_cart")
+│       ├── gallery.js    Login do administrador, envio e exclusão de artes
+│       ├── layout.js     Cabeçalho e rodapé compartilhados
+│       ├── main.js       Inicialização global, menus, avisos
+│       └── pages/        home.js · menu.js · cart-page.js · events.js · privacy.js
+├── database/  schema.sql · seed.sql
+└── docs/                 Esta documentação</code></pre>
+<h2>6 Funcionalidades por página</h2>
+<table><caption>Tabela 2 — Funcionalidades</caption><thead><tr><th>Página</th><th>Funcionalidades</th></tr></thead><tbody>
+<tr><td>Início</td><td>Apresentação, destaques do cardápio e próximos eventos.</td></tr>
+<tr><td>Cardápio</td><td>Filtro por categoria (quentes, gelados, salgados, doces), itens veganos, adição ao carrinho.</td></tr>
+<tr><td>Carrinho</td><td>Quantidades (máximo 20 por item), taxa de serviço de 10 %, código de retirada de 4 caracteres; sem pagamento.</td></tr>
+<tr><td>Eventos</td><td>Lista de eventos, vagas, formulário de RSVP com consentimento explícito.</td></tr>
+<tr><td>Galeria</td><td>Visualização das artes; administrador autenticado pode enviar, excluir e restaurar o acervo.</td></tr>
+<tr><td>Privacidade</td><td>Política LGPD, revogação de consentimento e exclusão dos dados locais.</td></tr>
+</tbody></table>
+<h2>7 Medidas de segurança e privacidade</h2>
+<ul>
+<li><strong>LGPD:</strong> minimização de dados, consentimento granular e revogável (art. 8.º), direito de eliminação (art. 18), nenhum dado de cartão coletado, dados mantidos apenas no navegador do usuário.</li>
+<li><strong>Content Security Policy:</strong> bloqueia scripts externos não autorizados, <code>object-src 'none'</code>, <code>frame-ancestors</code> via <code>.htaccess</code>.</li>
+<li><strong>Autenticação do administrador:</strong> senha comparada por hash SHA-256 com sal (Web Crypto), comparação em tempo constante, sessão em <code>sessionStorage</code> com expiração.</li>
+<li><strong>Prevenção de XSS:</strong> nenhum uso de <code>innerHTML</code> com dados do usuário; DOM construído com <code>textContent</code> via a função <code>el()</code>; sanitização em <code>InputSanitizer</code>.</li>
+<li><strong>Uploads:</strong> validação de tipo MIME (JPEG, PNG, WebP) e tamanho máximo.</li>
+</ul>
+<h2>8 Extensibilidade</h2>
+<p>Novas páginas reutilizam o mesmo modelo HTML, os contêineres <code>#site-header</code>/<code>#site-footer</code> e a pilha de scripts. Basta registrar a rota em <code>layout.js</code> e as chaves de tradução em <code>i18n.js</code>. O passo a passo completo está em <a href="estrutura.html#nova-pagina">Arquivos e Padrões</a>.</p>

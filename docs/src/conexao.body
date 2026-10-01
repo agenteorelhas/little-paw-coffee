@@ -1,0 +1,45 @@
+<h1>Diagrama de Conexão do Banco de Dados</h1>
+<figure class="diagrama"><pre class="mermaid">
+flowchart LR
+  subgraph ATUAL["Arquitetura atual"]
+    U1["Usuário"] --> N1["Navegador: HTML, CSS e JS"]
+    N1 --> LS[("localStorage: lpc_cart, lpc_consent, idioma, galeria")]
+    N1 --> SS[("sessionStorage: sessão do administrador")]
+  end
+  subgraph FUTURA["Arquitetura futura"]
+    U2["Usuário"] --> N2["Navegador"]
+    N2 -- "HTTPS / JSON" --> API["API HTTP REST"]
+    API --> APP["Servidor de aplicação: validação, autenticação, LGPD"]
+    APP -- "consultas parametrizadas" --> DB[("Banco SQL: 9 tabelas do schema.sql")]
+  end
+</pre><figcaption>Figura 1 — Arquitetura atual e futura</figcaption></figure>
+
+<h2>1 Arquitetura atual (localStorage)</h2>
+<p>O site é totalmente estático. Os dados do catálogo, eventos e acervo vêm de <code>assets/js/data.js</code>. Os dados do usuário ficam somente no próprio navegador, o que reduz a superfície de ataque e atende ao princípio da minimização (LGPD, art. 6.º, III). Nenhum dado é enviado a servidores.</p>
+<h2>2 Arquitetura futura (servidor SQL)</h2>
+<p>O navegador se comunicará por HTTPS com uma API. O servidor validará novamente todas as entradas, usará consultas parametrizadas (prevenção de injeção de SQL), armazenará apenas hashes de senha e tokens e aplicará as regras de retenção e eliminação da LGPD.</p>
+
+<h2>3 Papel de cada tabela</h2>
+<table><caption>Tabela 1 — Tabelas, índices e funcionalidades</caption>
+<thead><tr><th>Tabela</th><th>Papel</th><th>Índices</th><th>Funcionalidade / armazenamento atual</th></tr></thead><tbody>
+<tr><td>clientes</td><td>Titulares de dados (cadastro mínimo)</td><td>UNIQUE (email)</td><td>RSVP e pedidos; hoje não há cadastro</td></tr>
+<tr><td>itens_cardapio</td><td>Catálogo temático</td><td>idx_itens_cardapio_cat</td><td>Cardápio; <code>CATALOG</code> em data.js</td></tr>
+<tr><td>pedidos</td><td>Pedido fictício com código de retirada</td><td>idx_pedidos_cliente, idx_pedidos_criado_em, idx_pedidos_codigo</td><td>Carrinho; <code>lpc_cart</code></td></tr>
+<tr><td>itens_pedido</td><td>Associação pedido × item</td><td>PK composta, idx_itens_pedido_item</td><td>Linhas do carrinho</td></tr>
+<tr><td>eventos</td><td>Eventos da comunidade</td><td>idx_eventos_data</td><td>Eventos; <code>EVENTS</code> em data.js</td></tr>
+<tr><td>inscricoes_eventos</td><td>RSVP com data do consentimento</td><td>UNIQUE (id_cliente, id_evento), idx_inscricoes_evento</td><td>Formulário de RSVP</td></tr>
+<tr><td>sessoes_admin</td><td>Sessões do administrador (hash do token)</td><td>UNIQUE (token_hash), idx_sessoes_expira</td><td>Login da galeria; sessionStorage</td></tr>
+<tr><td>galeria_arte</td><td>Metadados das obras</td><td>idx_galeria_visivel, idx_galeria_sessao</td><td>Galeria; <code>DEFAULT_GALLERY</code> + localStorage</td></tr>
+<tr><td>cookies_consentimento</td><td>Registro de consentimento LGPD</td><td>idx_consentimento_cliente, idx_consentimento_anon</td><td>Banner; <code>lpc_consent</code></td></tr>
+</tbody></table>
+
+<h2>4 Plano de migração</h2>
+<ol>
+<li>Provisionar o banco (SQLite em desenvolvimento, MySQL 8 em produção) e executar <code>schema.sql</code> e <code>seed.sql</code>.</li>
+<li>Implementar a API REST (por exemplo, <code>GET /api/cardapio</code>, <code>POST /api/pedidos</code>, <code>POST /api/inscricoes</code>, <code>POST /api/admin/login</code>) com HTTPS, limitação de taxa e CORS restrito.</li>
+<li>Substituir as leituras de <code>data.js</code> por chamadas <code>fetch</code>, mantendo os dados locais como reserva offline.</li>
+<li>Migrar a autenticação do administrador para o servidor (hash forte como Argon2/bcrypt, cookie <code>HttpOnly; Secure; SameSite=Strict</code>).</li>
+<li>Armazenar as imagens enviadas no servidor, reprocessadas e sem metadados EXIF.</li>
+<li>Registrar consentimentos em <code>cookies_consentimento</code> e implementar os endpoints de acesso e eliminação de dados (LGPD, art. 18).</li>
+<li>Atualizar a CSP (<code>connect-src</code>) para o domínio da API e testar ponta a ponta.</li>
+</ol>

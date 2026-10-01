@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Diagramas de Atividade — Documentação Little Paw Coffee</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<link rel="stylesheet" href="docs.css">
+</head>
+<body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
+<nav class="lateral" id="nav-docs" aria-label="Navegação da documentação"></nav>
+<main id="conteudo">
+<h1>Diagramas de Atividade</h1>
+<p>Os diagramas a seguir descrevem os principais fluxos do site. Cada um é precedido de uma explicação textual (estado inicial, ações, nós de decisão e estado final).</p>
+
+<h2>1 Fluxo do usuário — navegar e fazer pedido</h2>
+<p><strong>Início:</strong> o usuário acessa o cardápio. <strong>Ações:</strong> filtra categorias, adiciona itens e ajusta quantidades. <strong>Decisões:</strong> carrinho vazio? quantidade acima de 20? <strong>Fim:</strong> o usuário recebe um código de retirada de 4 caracteres para pagar no balcão. Nenhum dado de pagamento é solicitado.</p>
+<figure class="diagrama"><pre class="mermaid">
+flowchart TD
+  A(["Início: acessa o Cardápio"]) --> B["Filtra por categoria"]
+  B --> C["Clica em Adicionar ao carrinho"]
+  C --> D{"Quantidade do item maior que 20?"}
+  D -- Sim --> E["Exibe aviso e limita a 20"]
+  D -- Não --> F["Salva no localStorage lpc_cart"]
+  E --> F
+  F --> G{"Continuar comprando?"}
+  G -- Sim --> B
+  G -- Não --> H["Abre a página Carrinho"]
+  H --> I{"Carrinho vazio?"}
+  I -- Sim --> B
+  I -- Não --> J["Calcula subtotal e taxa de 10%"]
+  J --> K["Confirma pedido fictício"]
+  K --> L["Gera código de retirada"]
+  L --> M(["Fim: retira e paga no balcão"])
+</pre><figcaption>Figura 1 — Fluxo de pedido</figcaption></figure>
+
+<h2>2 Fluxo do administrador — galeria</h2>
+<p><strong>Início:</strong> o administrador abre o painel na Galeria. <strong>Ações:</strong> informa a senha, que é convertida em hash SHA-256 com sal e comparada em tempo constante. <strong>Decisões:</strong> senha válida? limite de tentativas atingido? arquivo válido (tipo e tamanho)? <strong>Fim:</strong> encerramento da sessão (logout manual ou expiração).</p>
+<figure class="diagrama"><pre class="mermaid">
+flowchart TD
+  A(["Início: abre o painel administrativo"]) --> B["Digita a senha"]
+  B --> C["Calcula SHA-256 com sal"]
+  C --> D{"Hash confere?"}
+  D -- Não --> E["Incrementa tentativas falhas"]
+  E --> F{"Limite de tentativas atingido?"}
+  F -- Sim --> G["Bloqueio temporário"]
+  F -- Não --> B
+  G --> Z(["Fim"])
+  D -- Sim --> H["Cria sessão no sessionStorage"]
+  H --> I{"Ação desejada"}
+  I -- Enviar --> J["Seleciona imagem, título, artista e texto alternativo"]
+  J --> K{"Tipo e tamanho válidos?"}
+  K -- Não --> L["Exibe erro"]
+  L --> I
+  K -- Sim --> M["Salva a arte e atualiza a galeria"]
+  M --> I
+  I -- Excluir --> N["Confirma e remove a arte"]
+  N --> I
+  I -- Sair --> O["Encerra a sessão"]
+  O --> Z
+</pre><figcaption>Figura 2 — Fluxo administrativo da galeria</figcaption></figure>
+
+<h2>3 Fluxo de RSVP — eventos</h2>
+<p><strong>Início:</strong> o usuário visualiza um evento. <strong>Ações:</strong> preenche nome/apelido e e-mail. <strong>Decisões:</strong> há vagas? dados válidos? consentimento LGPD marcado? <strong>Fim:</strong> inscrição confirmada (armazenada localmente apenas se o usuário consentiu com preferências).</p>
+<figure class="diagrama"><pre class="mermaid">
+flowchart TD
+  A(["Início: visualiza o evento"]) --> B{"Há vagas disponíveis?"}
+  B -- Não --> C(["Fim: evento esgotado"])
+  B -- Sim --> D["Abre o formulário de RSVP"]
+  D --> E["Preenche nome e e-mail"]
+  E --> F{"Dados válidos e sanitizados?"}
+  F -- Não --> G["Mostra mensagens de erro acessíveis"]
+  G --> E
+  F -- Sim --> H{"Consentimento LGPD marcado?"}
+  H -- Não --> I["Solicita o consentimento"]
+  I --> H
+  H -- Sim --> J["Registra a inscrição com data do consentimento"]
+  J --> K(["Fim: inscrição confirmada"])
+</pre><figcaption>Figura 3 — Fluxo de inscrição em eventos</figcaption></figure>
+
+<h2>4 Fluxo LGPD — consentimento de cookies</h2>
+<p><strong>Início:</strong> primeira visita (sem a chave <code>lpc_consent</code>). <strong>Ações:</strong> exibição do banner. <strong>Decisões:</strong> aceitar ou recusar. <strong>Fim:</strong> a escolha, com versão da política e data, é salva; somente o armazenamento essencial (carrinho, idioma) funciona em caso de recusa. O usuário pode revogar a qualquer momento na página Privacidade.</p>
+<figure class="diagrama"><pre class="mermaid">
+flowchart TD
+  A(["Início: usuário acessa o site"]) --> B{"Existe lpc_consent com versão atual?"}
+  B -- Sim --> C["Aplica a escolha salva"]
+  B -- Não --> D["Exibe o banner de cookies"]
+  D --> E{"Escolha do usuário"}
+  E -- Aceitar --> F["Ativa armazenamento de preferências"]
+  E -- Recusar --> G["Mantém apenas o essencial e apaga dados opcionais"]
+  F --> H["Salva status, versão e data"]
+  G --> H
+  H --> I["Dispara o evento lpc:consentchange"]
+  C --> J(["Fim: estado salvo"])
+  I --> J
+</pre><figcaption>Figura 4 — Fluxo de consentimento</figcaption></figure>
+<footer><p>Little Paw Coffee — Documentação técnica do projeto. Texto em português do Brasil. Versão 1.0, outubro de 2026.</p></footer>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/sql.min.js"></script>
+<script src="docs.js"></script>
+</body>
+</html>

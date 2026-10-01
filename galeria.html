@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'">
+  <!-- Documentação: o cabeçalho X-Frame-Options real é enviado pelo .htaccess -->
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+  <meta name="description" content="Galeria de arte furry da Little Paw Coffee, com obras de artistas da comunidade.">
+  <meta name="theme-color" content="#5C2D0E">
+  <title data-i18n="gallery.docTitle">Galeria de Arte Furry — Little Paw Coffee</title>
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/accessibility.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+  <script defer src="assets/js/security.js"></script>
+  <script defer src="assets/js/i18n.js"></script>
+  <script defer src="assets/js/lgpd.js"></script>
+  <script defer src="assets/js/data.js"></script>
+  <script defer src="assets/js/cart.js"></script>
+  <script defer src="assets/js/layout.js"></script>
+  <script defer src="assets/js/gallery.js"></script>
+  <script defer src="assets/js/main.js"></script>
+</head>
+<body data-page="gallery" data-title-key="gallery.docTitle">
+  <a class="skip-link" href="#main" data-i18n="skip">Pular para o conteúdo principal</a>
+  <header id="site-header" class="site-header"></header>
+  <noscript><p class="noscript-note">Este site precisa de JavaScript para exibir a galeria.</p></noscript>
+
+  <main id="main" tabindex="-1">
+    <section class="page-hero paw-bg" aria-labelledby="page-title">
+      <div class="container">
+        <h1 id="page-title" data-i18n="gallery.title">Galeria de Arte Furry</h1>
+        <p class="page-hero__intro" data-i18n="gallery.intro"></p>
+        <div class="admin-bar">
+          <button type="button" class="btn btn--secondary" id="admin-btn" aria-pressed="false"
+                  data-i18n-attr="aria-label:gallery.adminBtnAria" aria-label="Entrar no modo administrador da galeria">
+            <span aria-hidden="true">🔐</span> <span data-i18n="gallery.adminBtn">Modo Admin</span>
+          </button>
+          <button type="button" class="btn btn--outline" id="logout-btn" hidden data-i18n="gallery.logout">Sair do modo admin</button>
+          <p class="admin-status" id="admin-status" role="status" hidden data-i18n="gallery.adminActive"></p>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <p class="notice notice--info" role="note">
+        <span aria-hidden="true">🛡️</span>
+        <span data-i18n="gallery.lgpd"></span>
+      </p>
+
+      <section class="admin-panel" id="admin-panel" hidden tabindex="-1" aria-labelledby="upload-heading">
+        <div class="admin-panel__grid">
+          <form class="form admin-card" id="upload-form" novalidate>
+            <h2 id="upload-heading" class="admin-card__title"><span aria-hidden="true">🖼️</span> <span data-i18n="gallery.upload.title">Upload de Arte</span></h2>
+            <div class="form-field">
+              <label for="upload-file" data-i18n="gallery.upload.file">Imagem</label>
+              <input type="file" id="upload-file" name="file" accept="image/png,image/jpeg,image/webp,image/gif" required>
+            </div>
+            <div class="form-field">
+              <label for="upload-title" data-i18n="gallery.upload.titleField">Título da obra</label>
+              <input type="text" id="upload-title" name="title" maxlength="80" required autocomplete="off">
+            </div>
+            <div class="form-field">
+              <label for="upload-artist" data-i18n="gallery.upload.artist">Nome do(a) artista</label>
+              <input type="text" id="upload-artist" name="artist" maxlength="60" required autocomplete="off">
+            </div>
+            <div class="form-field">
+              <label for="upload-desc" data-i18n="gallery.upload.desc">Descrição</label>
+              <textarea id="upload-desc" name="desc" rows="3" maxlength="300"></textarea>
+            </div>
+            <button type="submit" class="btn btn--primary btn--block" data-i18n="gallery.upload.submit">Publicar na galeria</button>
+            <p class="form-status" id="upload-status" role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="admin-side">
+            <form class="form admin-card" id="password-form" novalidate>
+              <h2 class="admin-card__title"><span aria-hidden="true">🔑</span> <span data-i18n="gallery.pw.title">Alterar senha</span></h2>
+              <div class="form-field">
+                <label for="new-password" data-i18n="gallery.pw.new">Nova senha</label>
+                <input type="password" id="new-password" minlength="10" maxlength="128" required autocomplete="new-password">
+              </div>
+              <div class="form-field">
+                <label for="confirm-password" data-i18n="gallery.pw.confirm">Confirmar nova senha</label>
+                <input type="password" id="confirm-password" minlength="10" maxlength="128" required autocomplete="new-password">
+              </div>
+              <button type="submit" class="btn btn--secondary btn--block" data-i18n="gallery.pw.submit">Salvar nova senha</button>
+              <p class="form-status" id="password-status" role="status" aria-live="polite"></p>
+            </form>
+            <div class="admin-card">
+              <button type="button" class="btn btn--outline btn--block" id="restore-btn">
+                <span aria-hidden="true">♻️</span> <span data-i18n="gallery.restore">Restaurar artes originais</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--tight" aria-labelledby="page-title">
+        <div class="gallery-grid" id="gallery-grid"></div>
+      </section>
+    </div>
+  </main>
+
+  <dialog class="modal" id="login-dialog" aria-labelledby="login-title">
+    <form class="form modal__content" id="login-form" novalidate>
+      <button type="button" class="modal__close" data-close-dialog data-i18n-attr="aria-label:modal.close" aria-label="Fechar">×</button>
+      <p class="modal__icon" aria-hidden="true">🔐</p>
+      <h2 id="login-title" data-i18n="gallery.login.title">Acesso da administração</h2>
+      <p class="muted" data-i18n="gallery.login.text"></p>
+      <div class="form-field">
+        <label for="admin-password" data-i18n="gallery.login.label">Senha</label>
+        <input type="password" id="admin-password" maxlength="128" required autocomplete="current-password" autofocus>
+      </div>
+      <p class="field-error" id="login-error" role="alert"></p>
+      <button type="submit" class="btn btn--primary btn--block" data-i18n="gallery.login.submit">Entrar</button>
+    </form>
+  </dialog>
+
+  <footer id="site-footer" class="site-footer"></footer>
+</body>
+</html>

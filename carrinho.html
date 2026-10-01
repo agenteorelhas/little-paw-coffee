@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'">
+  <!-- Documentação: o cabeçalho X-Frame-Options real é enviado pelo .htaccess -->
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
+  <meta name="description" content="Carrinho de pedidos fictício da Little Paw Coffee para retirada no balcão.">
+  <meta name="theme-color" content="#5C2D0E">
+  <title data-i18n="cart.docTitle">Carrinho — Little Paw Coffee</title>
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/accessibility.css">
+  <script defer src="assets/js/security.js"></script>
+  <script defer src="assets/js/i18n.js"></script>
+  <script defer src="assets/js/lgpd.js"></script>
+  <script defer src="assets/js/data.js"></script>
+  <script defer src="assets/js/cart.js"></script>
+  <script defer src="assets/js/layout.js"></script>
+  <script defer src="assets/js/pages/cart-page.js"></script>
+  <script defer src="assets/js/main.js"></script>
+</head>
+<body data-page="cart" data-title-key="cart.docTitle">
+  <a class="skip-link" href="#main" data-i18n="skip">Pular para o conteúdo principal</a>
+  <header id="site-header" class="site-header"></header>
+  <noscript><p class="noscript-note">Este site precisa de JavaScript para exibir o carrinho.</p></noscript>
+
+  <main id="main" tabindex="-1">
+    <section class="page-hero paw-bg" aria-labelledby="cart-title">
+      <div class="container">
+        <h1 id="cart-title" tabindex="-1" data-i18n="cart.title">Seu Carrinho</h1>
+        <p class="page-hero__intro" data-i18n="cart.intro"></p>
+      </div>
+    </section>
+
+    <div class="container section section--tight">
+      <div class="empty-state" id="cart-empty" hidden>
+        <p class="empty-state__art" aria-hidden="true">🐾☕🐾</p>
+        <h2 data-i18n="cart.empty.title">Seu carrinho está vazio</h2>
+        <p data-i18n="cart.empty.text"></p>
+        <a class="btn btn--primary btn--large" href="cardapio.html" data-i18n="cart.continue">Continuar comprando</a>
+      </div>
+
+      <div class="cart-layout" id="cart-filled" hidden>
+        <section aria-labelledby="cart-items-title">
+          <h2 id="cart-items-title" class="sr-only" data-i18n="cart.items">Itens do pedido</h2>
+          <ul class="cart-list" id="cart-items" role="list"></ul>
+          <div class="cart-actions">
+            <a class="btn btn--outline" href="cardapio.html"><span aria-hidden="true">← </span><span data-i18n="cart.continue">Continuar comprando</span></a>
+            <button type="button" class="btn btn--ghost" id="clear-btn" data-i18n="cart.clear">Esvaziar carrinho</button>
+          </div>
+        </section>
+
+        <aside class="summary-card" aria-labelledby="summary-title">
+          <h2 id="summary-title" data-i18n="cart.summary">Resumo do pedido</h2>
+          <dl class="summary-list" aria-live="polite">
+            <div><dt data-i18n="cart.subtotal">Subtotal</dt><dd id="sum-subtotal">R$ 0,00</dd></div>
+            <div><dt data-i18n="cart.fee">Taxa de serviço (10%)</dt><dd id="sum-fee">R$ 0,00</dd></div>
+            <div class="summary-total"><dt data-i18n="cart.total">Total</dt><dd id="sum-total">R$ 0,00</dd></div>
+          </dl>
+          <button type="button" class="btn btn--primary btn--block btn--large" id="checkout-btn" data-i18n="cart.checkout">Finalizar Pedido</button>
+          <p class="notice notice--small" role="note"><span aria-hidden="true">🔒</span> <span data-i18n="cart.note"></span></p>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <dialog class="modal" id="order-dialog" aria-labelledby="order-title">
+    <div class="modal__content modal__content--center">
+      <button type="button" class="modal__close" data-close-dialog data-i18n-attr="aria-label:modal.close" aria-label="Fechar">×</button>
+      <p class="modal__icon" aria-hidden="true">☕🐾</p>
+      <h2 id="order-title" data-i18n="cart.done.title">Pedido registrado! 🐾</h2>
+      <p data-i18n="cart.done.text">Retire no balcão com o código:</p>
+      <p class="order-code" id="order-code" aria-live="assertive">0000</p>
+      <p class="muted" data-i18n="cart.done.hint"></p>
+      <a class="btn btn--primary" href="cardapio.html" data-i18n="cart.done.ok">Voltar ao cardápio</a>
+    </div>
+  </dialog>
+
+  <footer id="site-footer" class="site-footer"></footer>
+</body>
+</html>
