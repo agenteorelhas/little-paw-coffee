@@ -1,0 +1,14 @@
+{
+  "name": "little-paw-coffee",
+  "version": "1.0.0",
+  "description": "Site estático do Café Little Paw (Little Paw Coffee) — HTML, CSS e JavaScript puro.",
+  "private": true,
+  "license": "MIT",
+  "author": "Guilherme Reis Bispo",
+  "scripts": {
+    "test": "node --test tests/site.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
