@@ -7,7 +7,7 @@
 
 /* ---------- 1. Tokens ---------- */
 :root {
-  --color-primary: #5C2D0E;        /* marrom café escuro — 11,6:1 no creme */
+  --color-primary: #0969da;        /* azul (issue #1) */
   --color-bg: #FDF6E3;             /* creme quente */
   --color-surface: #FFFDF7;
   --color-surface-alt: #F6EAD0;
